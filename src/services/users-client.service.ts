@@ -1,0 +1,75 @@
+import { Injectable, HttpException, Logger } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
+import { ConfigService } from '@nestjs/config';
+import { firstValueFrom } from 'rxjs';
+
+@Injectable()
+export class UsersClientService {
+  private readonly baseUrl: string;
+  private readonly logger = new Logger(UsersClientService.name);
+
+  constructor(
+    private readonly httpService: HttpService,
+    private readonly configService: ConfigService,
+  ) {
+    this.baseUrl = this.configService.get<string>('services.users', 'http://localhost:3001');
+  }
+
+  async getUser(userId: string): Promise<any> {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.get(`${this.baseUrl}/users/${userId}`),
+      );
+      return response.data;
+    } catch (error) {
+      this.logger.error(`Failed to fetch user ${userId}: ${error.message}`);
+      throw new HttpException(
+        error.response?.data || 'Users service unavailable',
+        error.response?.status || 503,
+      );
+    }
+  }
+
+  async getUsers(params?: any): Promise<any> {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.get(`${this.baseUrl}/users`, { params }),
+      );
+      return response.data;
+    } catch (error) {
+      this.logger.error(`Failed to fetch users: ${error.message}`);
+      throw new HttpException(
+        error.response?.data || 'Users service unavailable',
+        error.response?.status || 503,
+      );
+    }
+  }
+
+  async userExists(userId: string): Promise<boolean> {
+    try {
+      await this.getUser(userId);
+      return true;
+    } catch (error) {
+      if (error.getStatus() === 404) {
+        return false;
+      }
+      throw error;
+    }
+  }
+
+  async deleteUser(userId: string): Promise<any> {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.delete(`${this.baseUrl}/users/${userId}`),
+      );
+      return response.data;
+    } catch (error) {
+      this.logger.error(`Failed to delete user ${userId}: ${error.message}`);
+      throw new HttpException(
+        error.response?.data || 'Users service unavailable',
+        error.response?.status || 503,
+      );
+    }
+  }
+}
+

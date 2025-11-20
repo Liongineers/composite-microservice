@@ -1,0 +1,68 @@
+import { Controller, Get, Post, Delete, Body, Param, Query } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody, ApiQuery } from '@nestjs/swagger';
+import { CompositeService } from './composite.service';
+import { CreateProductDto } from '../dto/create-product.dto';
+import { CreateReviewDto } from '../dto/create-review.dto';
+import { SellerProfileDto } from '../dto/seller-profile.dto';
+import { ProductDetailsDto } from '../dto/product-details.dto';
+
+@ApiTags('composite')
+@Controller('api')
+export class CompositeController {
+  constructor(private readonly compositeService: CompositeService) {}
+
+  @Get('sellers/:sellerId/profile')
+  @ApiOperation({ summary: 'Get seller profile with products and reviews (PARALLEL EXECUTION)' })
+  @ApiParam({ name: 'sellerId', description: 'Seller UUID' })
+  @ApiResponse({ status: 200, description: 'Seller profile retrieved', type: SellerProfileDto })
+  @ApiResponse({ status: 404, description: 'Seller not found' })
+  async getSellerProfile(@Param('sellerId') sellerId: string): Promise<SellerProfileDto> {
+    return await this.compositeService.getSellerProfile(sellerId);
+  }
+
+  @Get('products/:productId/details')
+  @ApiOperation({ summary: 'Get product details with seller info and reviews (PARALLEL EXECUTION)' })
+  @ApiParam({ name: 'productId', description: 'Product UUID' })
+  @ApiResponse({ status: 200, description: 'Product details retrieved', type: ProductDetailsDto })
+  @ApiResponse({ status: 404, description: 'Product not found' })
+  async getProductDetails(@Param('productId') productId: string): Promise<ProductDetailsDto> {
+    return await this.compositeService.getProductDetails(productId);
+  }
+
+  @Post('products')
+  @ApiOperation({ summary: 'Create product with FK validation' })
+  @ApiBody({ type: CreateProductDto })
+  @ApiResponse({ status: 201, description: 'Product created with seller info' })
+  @ApiResponse({ status: 400, description: 'Seller does not exist' })
+  async createProduct(@Body() createProductDto: CreateProductDto): Promise<any> {
+    return await this.compositeService.createProduct(createProductDto);
+  }
+
+  @Post('reviews')
+  @ApiOperation({ summary: 'Create review with FK validation' })
+  @ApiBody({ type: CreateReviewDto })
+  @ApiResponse({ status: 201, description: 'Review created' })
+  @ApiResponse({ status: 400, description: 'Writer or seller does not exist' })
+  async createReview(@Body() createReviewDto: CreateReviewDto): Promise<any> {
+    return await this.compositeService.createReview(createReviewDto);
+  }
+
+  @Delete('users/:userId')
+  @ApiOperation({ summary: 'Delete user with dependency checks' })
+  @ApiParam({ name: 'userId', description: 'User UUID' })
+  @ApiResponse({ status: 200, description: 'User deleted' })
+  @ApiResponse({ status: 409, description: 'Cannot delete user with dependencies' })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  async deleteUser(@Param('userId') userId: string): Promise<any> {
+    return await this.compositeService.deleteUser(userId);
+  }
+
+  @Get('products/search')
+  @ApiOperation({ summary: 'Search products with seller enrichment (PARALLEL EXECUTION)' })
+  @ApiQuery({ name: 'query', description: 'Search query' })
+  @ApiResponse({ status: 200, description: 'Products with seller info' })
+  async searchProducts(@Query('query') query: string): Promise<any[]> {
+    return await this.compositeService.searchProducts(query);
+  }
+}
+
