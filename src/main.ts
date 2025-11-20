@@ -22,9 +22,9 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
   
-  const port = process.env.PORT || 3000;
-  await app.listen(port);
-  console.log(`Composite microservice running on http://localhost:${port}`);
-  console.log(`Swagger documentation available at http://localhost:${port}/api/docs`);
+  const port = parseInt(process.env.PORT || '8080', 10);
+  await app.listen(port, '0.0.0.0');
+  console.log(`Composite microservice running on port ${port}`);
+  console.log(`Swagger documentation available at /api/docs`);
 }
 bootstrap();
