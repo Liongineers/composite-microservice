@@ -102,9 +102,9 @@ npm install
 Create `.env` file:
 ```
 PORT=3000
-USERS_SERVICE_URL=http://localhost:3001
-PRODUCTS_SERVICE_URL=http://localhost:3002
-REVIEWS_SERVICE_URL=http://localhost:3003
+USERS_SERVICE_URL=http://136.119.107.45:8080
+PRODUCTS_SERVICE_URL=https://products-microservice-471529071641.us-east1.run.app
+REVIEWS_SERVICE_URL=https://reviews-microservice-471529071641.us-east1.run.app
 ```
 
 ### 3. Run the service
