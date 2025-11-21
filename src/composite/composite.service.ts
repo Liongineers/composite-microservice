@@ -17,6 +17,11 @@ export class CompositeService {
     private readonly reviewsClient: ReviewsClientService,
   ) {}
 
+  async getUsers(): Promise<any[]> {
+    this.logger.log('Fetching all users from Users microservice');
+    return await this.usersClient.getUsers();
+  }
+
   async getSellerProfile(sellerId: string): Promise<SellerProfileDto> {
     this.logger.log(`Fetching seller profile for ${sellerId} with PARALLEL execution`);
 

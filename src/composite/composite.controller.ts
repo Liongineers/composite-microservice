@@ -11,6 +11,13 @@ import { ProductDetailsDto } from '../dto/product-details.dto';
 export class CompositeController {
   constructor(private readonly compositeService: CompositeService) {}
 
+  @Get('users')
+  @ApiOperation({ summary: 'Get all users' })
+  @ApiResponse({ status: 200, description: 'List of users' })
+  async getUsers(): Promise<any[]> {
+    return await this.compositeService.getUsers();
+  }
+
   @Get('sellers/:sellerId/profile')
   @ApiOperation({ summary: 'Get seller profile with products and reviews (PARALLEL EXECUTION)' })
   @ApiParam({ name: 'sellerId', description: 'Seller UUID' })
