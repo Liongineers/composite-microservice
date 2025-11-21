@@ -3,6 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody, ApiQuery } from 
 import { CompositeService } from './composite.service';
 import { CreateProductDto } from '../dto/create-product.dto';
 import { CreateReviewDto } from '../dto/create-review.dto';
+import { CreateUserDto } from '../dto/create-user.dto';
 import { SellerProfileDto } from '../dto/seller-profile.dto';
 import { ProductDetailsDto } from '../dto/product-details.dto';
 
@@ -16,6 +17,15 @@ export class CompositeController {
   @ApiResponse({ status: 200, description: 'List of users' })
   async getUsers(): Promise<any[]> {
     return await this.compositeService.getUsers();
+  }
+
+  @Post('users')
+  @ApiOperation({ summary: 'Create a new user' })
+  @ApiBody({ type: CreateUserDto })
+  @ApiResponse({ status: 201, description: 'User created' })
+  @ApiResponse({ status: 400, description: 'Invalid input' })
+  async createUser(@Body() createUserDto: CreateUserDto): Promise<any> {
+    return await this.compositeService.createUser(createUserDto);
   }
 
   @Get('sellers/:sellerId/profile')

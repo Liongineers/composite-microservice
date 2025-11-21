@@ -22,6 +22,11 @@ export class CompositeService {
     return await this.usersClient.getUsers();
   }
 
+  async createUser(createUserDto: any): Promise<any> {
+    this.logger.log(`Creating new user: ${createUserDto.name}`);
+    return await this.usersClient.createUser(createUserDto);
+  }
+
   async getSellerProfile(sellerId: string): Promise<SellerProfileDto> {
     this.logger.log(`Fetching seller profile for ${sellerId} with PARALLEL execution`);
 

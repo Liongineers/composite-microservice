@@ -57,6 +57,21 @@ export class UsersClientService {
     }
   }
 
+  async createUser(userData: any): Promise<any> {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.post(`${this.baseUrl}/users/create_user`, userData),
+      );
+      return response.data;
+    } catch (error) {
+      this.logger.error(`Failed to create user: ${error.message}`);
+      throw new HttpException(
+        error.response?.data || 'Users service unavailable',
+        error.response?.status || 503,
+      );
+    }
+  }
+
   async deleteUser(userId: string): Promise<any> {
     try {
       const response = await firstValueFrom(
