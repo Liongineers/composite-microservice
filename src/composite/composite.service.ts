@@ -19,7 +19,9 @@ export class CompositeService {
 
   async getUsers(): Promise<any[]> {
     this.logger.log('Fetching all users from Users microservice');
-    return await this.usersClient.getUsers();
+    const response = await this.usersClient.getUsers();
+    // Users service returns paginated response with data array
+    return response.data || [];
   }
 
   async createUser(createUserDto: any): Promise<any> {
