@@ -12,7 +12,10 @@ export class ProductsClientService {
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
   ) {
-    this.baseUrl = this.configService.get<string>('services.products', 'http://localhost:3002');
+    this.baseUrl = this.configService.get<string>(
+      'services.products',
+      'http://localhost:3002',
+    );
   }
 
   async getProduct(productId: string): Promise<any> {
@@ -22,7 +25,9 @@ export class ProductsClientService {
       );
       return response.data;
     } catch (error) {
-      this.logger.error(`Failed to fetch product ${productId}: ${error.message}`);
+      this.logger.error(
+        `Failed to fetch product ${productId}: ${error.message}`,
+      );
       throw new HttpException(
         error.response?.data || 'Products service unavailable',
         error.response?.status || 503,
@@ -52,7 +57,9 @@ export class ProductsClientService {
       );
       return response.data;
     } catch (error) {
-      this.logger.error(`Failed to fetch products for seller ${sellerId}: ${error.message}`);
+      this.logger.error(
+        `Failed to fetch products for seller ${sellerId}: ${error.message}`,
+      );
       return [];
     }
   }
@@ -87,4 +94,3 @@ export class ProductsClientService {
     }
   }
 }
-

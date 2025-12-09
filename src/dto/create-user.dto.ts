@@ -22,4 +22,3 @@ export class CreateUserDto {
   @IsNotEmpty()
   merch: string;
 }
-

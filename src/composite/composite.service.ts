@@ -1,4 +1,9 @@
-import { Injectable, BadRequestException, ConflictException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  ConflictException,
+  Logger,
+} from '@nestjs/common';
 import { UsersClientService } from '../services/users-client.service';
 import { ProductsClientService } from '../services/products-client.service';
 import { ReviewsClientService } from '../services/reviews-client.service';
@@ -30,7 +35,9 @@ export class CompositeService {
   }
 
   async getSellerProfile(sellerId: string): Promise<SellerProfileDto> {
-    this.logger.log(`Fetching seller profile for ${sellerId} with PARALLEL execution`);
+    this.logger.log(
+      `Fetching seller profile for ${sellerId} with PARALLEL execution`,
+    );
 
     // PARALLEL EXECUTION: Fetch data from all three services simultaneously
     const [seller, products, reviews] = await Promise.all([
@@ -42,9 +49,10 @@ export class CompositeService {
     // Calculate statistics
     const totalProducts = products.length;
     const totalReviews = reviews.length;
-    const averageRating = totalReviews > 0
-      ? reviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews
-      : 0;
+    const averageRating =
+      totalReviews > 0
+        ? reviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews
+        : 0;
 
     return {
       seller,
@@ -59,7 +67,9 @@ export class CompositeService {
   }
 
   async getProductDetails(productId: string): Promise<ProductDetailsDto> {
-    this.logger.log(`Fetching product details for ${productId} with PARALLEL execution`);
+    this.logger.log(
+      `Fetching product details for ${productId} with PARALLEL execution`,
+    );
 
     // First get the product
     const product = await this.productsClient.getProduct(productId);
@@ -72,9 +82,10 @@ export class CompositeService {
 
     // Calculate seller statistics
     const totalReviews = sellerReviews.length;
-    const averageRating = totalReviews > 0
-      ? sellerReviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews
-      : 0;
+    const averageRating =
+      totalReviews > 0
+        ? sellerReviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews
+        : 0;
 
     return {
       product,
@@ -88,10 +99,14 @@ export class CompositeService {
   }
 
   async createProduct(createProductDto: CreateProductDto): Promise<any> {
-    this.logger.log(`Creating product with FK validation for seller ${createProductDto.seller_info}`);
+    this.logger.log(
+      `Creating product with FK validation for seller ${createProductDto.seller_info}`,
+    );
 
     // LOGICAL FOREIGN KEY CONSTRAINT: Validate seller exists
-    const sellerExists = await this.usersClient.userExists(createProductDto.seller_info);
+    const sellerExists = await this.usersClient.userExists(
+      createProductDto.seller_info,
+    );
     if (!sellerExists) {
       throw new BadRequestException('Seller does not exist');
     }
@@ -109,7 +124,9 @@ export class CompositeService {
   }
 
   async createReview(createReviewDto: CreateReviewDto): Promise<any> {
-    this.logger.log(`Creating review with FK validation for writer ${createReviewDto.writer_id} and seller ${createReviewDto.seller_id}`);
+    this.logger.log(
+      `Creating review with FK validation for writer ${createReviewDto.writer_id} and seller ${createReviewDto.seller_id}`,
+    );
 
     // LOGICAL FOREIGN KEY CONSTRAINTS: Validate both writer and seller exist in parallel
     const [writerExists, sellerExists] = await Promise.all([
@@ -127,7 +144,7 @@ export class CompositeService {
 
     // Reviews service doesn't accept writer_id, it uses a hardcoded TEST_USER
     const { writer_id, ...reviewPayload } = createReviewDto;
-    
+
     // Delegate to reviews service
     return await this.reviewsClient.createReview(reviewPayload);
   }
@@ -142,7 +159,10 @@ export class CompositeService {
       this.reviewsClient.getReviewsBySeller(userId),
     ]);
 
-    const hasDependencies = products.length > 0 || writtenReviews.length > 0 || receivedReviews.length > 0;
+    const hasDependencies =
+      products.length > 0 ||
+      writtenReviews.length > 0 ||
+      receivedReviews.length > 0;
 
     if (hasDependencies) {
       throw new ConflictException({
@@ -166,11 +186,11 @@ export class CompositeService {
     const products = await this.productsClient.searchProducts({ query });
 
     // Get unique seller IDs
-    const sellerIds = [...new Set(products.map(p => p.seller_id))];
+    const sellerIds = [...new Set(products.map((p) => p.seller_id))];
 
     // PARALLEL EXECUTION: Fetch all sellers in parallel
     const sellers = await Promise.all(
-      sellerIds.map(id => this.usersClient.getUser(id).catch(() => null)),
+      sellerIds.map((id) => this.usersClient.getUser(id).catch(() => null)),
     );
 
     // Create seller map
@@ -182,7 +202,7 @@ export class CompositeService {
     });
 
     // Enrich products with seller info
-    return products.map(product => ({
+    return products.map((product) => ({
       ...product,
       seller_info: sellerMap.get(product.seller_id) || null,
     }));
@@ -192,4 +212,3 @@ export class CompositeService {
     return this.usersClient['baseUrl'];
   }
 }
-

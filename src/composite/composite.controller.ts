@@ -1,11 +1,12 @@
-import { Controller, Get, Post, Delete, Body, Param, Query, Req, Res } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody, ApiQuery } from '@nestjs/swagger';
+import { Controller, Get, Post, Delete, Body, Param, Query, Req, Res, UseGuards } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody, ApiQuery, ApiBearerAuth } from '@nestjs/swagger';
 import { CompositeService } from './composite.service';
 import { CreateProductDto } from '../dto/create-product.dto';
 import { CreateReviewDto } from '../dto/create-review.dto';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { SellerProfileDto } from '../dto/seller-profile.dto';
 import { ProductDetailsDto } from '../dto/product-details.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @ApiTags('composite')
 @Controller('api')
@@ -82,24 +83,15 @@ export class CompositeController {
     return await this.compositeService.searchProducts(query);
   }
 
-  @Get('auth/google')
-  @ApiOperation({ summary: 'Initiate Google OAuth login' })
-  @ApiResponse({ status: 302, description: 'Redirect to Google OAuth' })
-  async googleAuth(@Req() req: any, @Res() res: any): Promise<void> {
-    // Proxy to Users microservice
-    const usersAuthUrl = `${this.compositeService.getUsersServiceUrl()}/auth/google`;
-    return res.redirect(usersAuthUrl);
-  }
-
-  @Get('auth/google/callback')
-  @ApiOperation({ summary: 'Google OAuth callback' })
-  @ApiResponse({ status: 200, description: 'JWT token returned' })
-  async googleAuthCallback(@Req() req: any, @Res() res: any): Promise<void> {
-    // Forward entire request to Users microservice
-    const usersCallbackUrl = `${this.compositeService.getUsersServiceUrl()}/auth/google/callback${req.url.includes('?') ? req.url.substring(req.url.indexOf('?')) : ''}`;
-    
-    // Proxy the request and return response
-    return res.redirect(usersCallbackUrl);
+  @Get('profile')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get user profile' })
+  @ApiResponse({ status: 200, description: 'User profile' })
+  @ApiResponse({ status: 401, description: 'Missing token' })
+  @ApiResponse({ status: 403, description: 'Invalid token' })
+  async getProfile(@Req() req: any): Promise<any> {
+    return { user: req.user };
   }
 }
 

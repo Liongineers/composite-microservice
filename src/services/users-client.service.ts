@@ -12,13 +12,16 @@ export class UsersClientService {
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
   ) {
-    this.baseUrl = this.configService.get<string>('services.users', 'http://localhost:3001');
+    this.baseUrl = this.configService.get<string>(
+      'services.users',
+      'http://localhost:3001',
+    );
   }
 
-  async getUser(userId: string): Promise<any> {
+  async getUser(userId: string, headers?: any): Promise<any> {
     try {
       const response = await firstValueFrom(
-        this.httpService.get(`${this.baseUrl}/users/${userId}`),
+        this.httpService.get(`${this.baseUrl}/users/${userId}`, { headers }),
       );
       return response.data;
     } catch (error) {
@@ -87,4 +90,3 @@ export class UsersClientService {
     }
   }
 }
-

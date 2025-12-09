@@ -12,7 +12,10 @@ export class ReviewsClientService {
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
   ) {
-    this.baseUrl = this.configService.get<string>('services.reviews', 'http://localhost:3003');
+    this.baseUrl = this.configService.get<string>(
+      'services.reviews',
+      'http://localhost:3003',
+    );
   }
 
   async getReview(reviewId: string): Promise<any> {
@@ -37,7 +40,9 @@ export class ReviewsClientService {
       );
       return response.data;
     } catch (error) {
-      this.logger.error(`Failed to fetch reviews for seller ${sellerId}: ${error.message}`);
+      this.logger.error(
+        `Failed to fetch reviews for seller ${sellerId}: ${error.message}`,
+      );
       return [];
     }
   }
@@ -51,7 +56,9 @@ export class ReviewsClientService {
       );
       return response.data;
     } catch (error) {
-      this.logger.error(`Failed to fetch reviews by writer ${writerId}: ${error.message}`);
+      this.logger.error(
+        `Failed to fetch reviews by writer ${writerId}: ${error.message}`,
+      );
       return [];
     }
   }
@@ -78,7 +85,9 @@ export class ReviewsClientService {
       );
       return response.data;
     } catch (error) {
-      this.logger.error(`Failed to delete review ${reviewId}: ${error.message}`);
+      this.logger.error(
+        `Failed to delete review ${reviewId}: ${error.message}`,
+      );
       throw new HttpException(
         error.response?.data || 'Reviews service unavailable',
         error.response?.status || 503,
@@ -86,4 +95,3 @@ export class ReviewsClientService {
     }
   }
 }
-

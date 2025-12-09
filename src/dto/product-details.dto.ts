@@ -21,4 +21,3 @@ export class ProductDetailsDto {
   @ApiProperty({ type: SellerStatsDto })
   sellerStats: SellerStatsDto;
 }
-

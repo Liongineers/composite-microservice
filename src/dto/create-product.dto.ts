@@ -14,7 +14,10 @@ export class CreateProductDto {
   @IsUUID()
   seller_info: string;
 
-  @ApiProperty({ example: 'Gently used laptop in excellent condition', required: false })
+  @ApiProperty({
+    example: 'Gently used laptop in excellent condition',
+    required: false,
+  })
   @IsOptional()
   @IsString()
   description?: string;
