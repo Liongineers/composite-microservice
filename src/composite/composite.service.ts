@@ -187,5 +187,9 @@ export class CompositeService {
       seller_info: sellerMap.get(product.seller_id) || null,
     }));
   }
+
+  getUsersServiceUrl(): string {
+    return this.usersClient['baseUrl'];
+  }
 }
 

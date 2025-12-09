@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Delete, Body, Param, Query } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Body, Param, Query, Req, Res } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody, ApiQuery } from '@nestjs/swagger';
 import { CompositeService } from './composite.service';
 import { CreateProductDto } from '../dto/create-product.dto';
@@ -80,6 +80,26 @@ export class CompositeController {
   @ApiResponse({ status: 200, description: 'Products with seller info' })
   async searchProducts(@Query('query') query: string): Promise<any[]> {
     return await this.compositeService.searchProducts(query);
+  }
+
+  @Get('auth/google')
+  @ApiOperation({ summary: 'Initiate Google OAuth login' })
+  @ApiResponse({ status: 302, description: 'Redirect to Google OAuth' })
+  async googleAuth(@Req() req: any, @Res() res: any): Promise<void> {
+    // Proxy to Users microservice
+    const usersAuthUrl = `${this.compositeService.getUsersServiceUrl()}/auth/google`;
+    return res.redirect(usersAuthUrl);
+  }
+
+  @Get('auth/google/callback')
+  @ApiOperation({ summary: 'Google OAuth callback' })
+  @ApiResponse({ status: 200, description: 'JWT token returned' })
+  async googleAuthCallback(@Req() req: any, @Res() res: any): Promise<void> {
+    // Forward entire request to Users microservice
+    const usersCallbackUrl = `${this.compositeService.getUsersServiceUrl()}/auth/google/callback${req.url.includes('?') ? req.url.substring(req.url.indexOf('?')) : ''}`;
+    
+    // Proxy the request and return response
+    return res.redirect(usersCallbackUrl);
   }
 }
 
