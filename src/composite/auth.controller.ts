@@ -14,15 +14,13 @@ export class AuthController {
   }
 
   @Get('google/callback')
-  @ApiOperation({ summary: 'Google OAuth callback' })
-  @ApiResponse({ status: 200, description: 'JWT token returned' })
   async googleAuthCallback(@Req() req: any, @Res() res: any): Promise<void> {
-    const url = `http://34.55.28.157:8080/auth/google/callback?${req.url.split('?')[1]}`;
+  const queryString = req.url.split('?')[1];
 
-    const result = await axios.get(url);
+  // Forward callback to users-microservice so the BROWSER continues the OAuth redirect chain
+  const usersCallbackUrl = `http://34.55.28.157:8080/auth/google/callback?${queryString}`;
 
-    // result contains your JWT from Users service
-    // Send to frontend
-    res.json(result.data);
+  return res.redirect(usersCallbackUrl);
   }
+
 }
