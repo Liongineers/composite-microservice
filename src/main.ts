@@ -12,7 +12,13 @@ async function bootstrap() {
   console.log('NestJS app created');
 
   app.enableCors();
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+  app.useGlobalPipes(new ValidationPipe({ 
+    whitelist: true, 
+    transform: true,
+    transformOptions: {
+      enableImplicitConversion: true,
+    },
+  }));
   app.useGlobalFilters(new AllExceptionsFilter());
 
   const config = new DocumentBuilder()

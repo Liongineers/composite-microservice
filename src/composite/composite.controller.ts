@@ -62,6 +62,8 @@ export class CompositeController {
   @ApiResponse({ status: 201, description: 'Review created' })
   @ApiResponse({ status: 400, description: 'Writer or seller does not exist' })
   async createReview(@Body() createReviewDto: CreateReviewDto): Promise<any> {
+    console.log('Received review data:', JSON.stringify(createReviewDto));
+    console.log('writer_id type:', typeof createReviewDto.writer_id, 'value:', createReviewDto.writer_id);
     return await this.compositeService.createReview(createReviewDto);
   }
 
