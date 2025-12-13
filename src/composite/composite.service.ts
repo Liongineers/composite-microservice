@@ -100,12 +100,12 @@ export class CompositeService {
 
   async createProduct(createProductDto: CreateProductDto): Promise<any> {
     this.logger.log(
-      `Creating product with FK validation for seller ${createProductDto.seller_info}`,
+      `Creating product with FK validation for seller ${createProductDto.seller_id}`,
     );
 
     // LOGICAL FOREIGN KEY CONSTRAINT: Validate seller exists
     const sellerExists = await this.usersClient.userExists(
-      createProductDto.seller_info,
+      createProductDto.seller_id,
     );
     if (!sellerExists) {
       throw new BadRequestException('Seller does not exist');
@@ -115,7 +115,7 @@ export class CompositeService {
     const product = await this.productsClient.createProduct(createProductDto);
 
     // Enrich with seller info
-    const seller = await this.usersClient.getUser(createProductDto.seller_info);
+    const seller = await this.usersClient.getUser(createProductDto.seller_id);
 
     return {
       ...product,

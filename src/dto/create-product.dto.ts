@@ -4,7 +4,7 @@ import { ApiProperty } from '@nestjs/swagger';
 export class CreateProductDto {
   @ApiProperty({ example: 'Laptop' })
   @IsString()
-  prod_name: string;
+  product_name: string;
 
   @ApiProperty({ example: 'Electronics' })
   @IsString()
@@ -12,7 +12,7 @@ export class CreateProductDto {
 
   @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174000' })
   @IsUUID()
-  seller_info: string;
+  seller_id: string;
 
   @ApiProperty({
     example: 'Gently used laptop in excellent condition',
