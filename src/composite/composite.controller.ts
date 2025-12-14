@@ -7,7 +7,7 @@ import { CreateUserDto } from '../dto/create-user.dto';
 import { SellerProfileDto } from '../dto/seller-profile.dto';
 import { ProductDetailsDto } from '../dto/product-details.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { Request } from 'express';
+import type { Request } from 'express';
 
 @ApiTags('composite')
 @Controller('api')
