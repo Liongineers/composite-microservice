@@ -36,7 +36,7 @@ export class ReviewsClientService {
   async getReviewsBySeller(sellerId: string): Promise<any[]> {
     try {
       const response = await firstValueFrom(
-        this.httpService.get(`${this.baseUrl}/reviews/user/${sellerId}`),
+        this.httpService.get(`${this.baseUrl}/reviews/seller/${sellerId}`),
       );
       return response.data;
     } catch (error) {

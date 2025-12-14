@@ -51,7 +51,7 @@ export class CompositeService {
     const totalReviews = reviews.length;
     const averageRating =
       totalReviews > 0
-        ? reviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews
+        ? reviews.reduce((sum, r) => sum + (r.rating || r.stars || 0), 0) / totalReviews
         : 0;
 
     return {
@@ -84,7 +84,7 @@ export class CompositeService {
     const totalReviews = sellerReviews.length;
     const averageRating =
       totalReviews > 0
-        ? sellerReviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews
+        ? sellerReviews.reduce((sum, r) => sum + (r.rating || r.stars || 0), 0) / totalReviews
         : 0;
 
     return {
