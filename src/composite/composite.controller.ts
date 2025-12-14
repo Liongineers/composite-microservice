@@ -7,6 +7,7 @@ import { CreateUserDto } from '../dto/create-user.dto';
 import { SellerProfileDto } from '../dto/seller-profile.dto';
 import { ProductDetailsDto } from '../dto/product-details.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { Request } from 'express';
 
 @ApiTags('composite')
 @Controller('api')
@@ -16,8 +17,10 @@ export class CompositeController {
   @Get('users')
   @ApiOperation({ summary: 'Get all users' })
   @ApiResponse({ status: 200, description: 'List of users' })
-  async getUsers(): Promise<any[]> {
-    return await this.compositeService.getUsers();
+  async getUsers(@Req() req: Request): Promise<any[]> {
+    const authHeader = req.headers.authorization;
+    const headers = authHeader ? { authorization: authHeader } : {};
+    return await this.compositeService.getUsers(headers);
   }
 
   @Post('users')
@@ -34,8 +37,10 @@ export class CompositeController {
   @ApiParam({ name: 'userId', description: 'User UUID' })
   @ApiResponse({ status: 200, description: 'User updated' })
   @ApiResponse({ status: 404, description: 'User not found' })
-  async updateUser(@Param('userId') userId: string, @Body() updateData: any): Promise<any> {
-    return await this.compositeService.updateUser(userId, updateData);
+  async updateUser(@Param('userId') userId: string, @Body() updateData: any, @Req() req: Request): Promise<any> {
+    const authHeader = req.headers.authorization;
+    const headers = authHeader ? { authorization: authHeader } : {};
+    return await this.compositeService.updateUser(userId, updateData, headers);
   }
 
   @Get('sellers/:sellerId/profile')
@@ -82,8 +87,10 @@ export class CompositeController {
   @ApiResponse({ status: 200, description: 'User deleted' })
   @ApiResponse({ status: 409, description: 'Cannot delete user with dependencies' })
   @ApiResponse({ status: 404, description: 'User not found' })
-  async deleteUser(@Param('userId') userId: string): Promise<any> {
-    return await this.compositeService.deleteUser(userId);
+  async deleteUser(@Param('userId') userId: string, @Req() req: Request): Promise<any> {
+    const authHeader = req.headers.authorization;
+    const headers = authHeader ? { authorization: authHeader } : {};
+    return await this.compositeService.deleteUser(userId, headers);
   }
 
   @Get('products/search')

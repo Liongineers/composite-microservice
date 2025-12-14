@@ -22,9 +22,9 @@ export class CompositeService {
     private readonly reviewsClient: ReviewsClientService,
   ) {}
 
-  async getUsers(): Promise<any[]> {
+  async getUsers(headers?: any): Promise<any[]> {
     this.logger.log('Fetching all users from Users microservice');
-    const response = await this.usersClient.getUsers();
+    const response = await this.usersClient.getUsers(undefined, headers);
     // Users service returns paginated response with data array
     return response.data || [];
   }
@@ -165,7 +165,7 @@ export class CompositeService {
     return await this.reviewsClient.createReview(createReviewDto);
   }
 
-  async deleteUser(userId: string): Promise<any> {
+  async deleteUser(userId: string, headers?: any): Promise<any> {
     this.logger.log(`Deleting user ${userId} with dependency checks`);
 
     // LOGICAL FOREIGN KEY CONSTRAINTS: Check dependencies in parallel
@@ -192,20 +192,20 @@ export class CompositeService {
     }
 
     // No dependencies, safe to delete
-    return await this.usersClient.deleteUser(userId);
+    return await this.usersClient.deleteUser(userId, headers);
   }
 
-  async updateUser(userId: string, updateData: any): Promise<any> {
+  async updateUser(userId: string, updateData: any, headers?: any): Promise<any> {
     this.logger.log(`Updating user ${userId}`);
     
     // Validate user exists
-    const userExists = await this.usersClient.userExists(userId);
+    const userExists = await this.usersClient.userExists(userId, headers);
     if (!userExists) {
       throw new BadRequestException('User does not exist');
     }
     
     // Delegate to users service
-    return await this.usersClient.updateUser(userId, updateData);
+    return await this.usersClient.updateUser(userId, updateData, headers);
   }
 
   async searchProducts(query: string): Promise<any[]> {

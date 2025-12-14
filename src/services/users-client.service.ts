@@ -33,10 +33,10 @@ export class UsersClientService {
     }
   }
 
-  async getUsers(params?: any): Promise<any> {
+  async getUsers(params?: any, headers?: any): Promise<any> {
     try {
       const response = await firstValueFrom(
-        this.httpService.get(`${this.baseUrl}/users`, { params }),
+        this.httpService.get(`${this.baseUrl}/users`, { params, headers }),
       );
       return response.data;
     } catch (error) {
@@ -48,9 +48,9 @@ export class UsersClientService {
     }
   }
 
-  async userExists(userId: string): Promise<boolean> {
+  async userExists(userId: string, headers?: any): Promise<boolean> {
     try {
-      await this.getUser(userId);
+      await this.getUser(userId, headers);
       return true;
     } catch (error) {
       if (error.getStatus() === 404) {
@@ -75,10 +75,10 @@ export class UsersClientService {
     }
   }
 
-  async deleteUser(userId: string): Promise<any> {
+  async deleteUser(userId: string, headers?: any): Promise<any> {
     try {
       const response = await firstValueFrom(
-        this.httpService.delete(`${this.baseUrl}/users/${userId}`),
+        this.httpService.delete(`${this.baseUrl}/users/${userId}`, { headers }),
       );
       return response.data;
     } catch (error) {
@@ -90,10 +90,10 @@ export class UsersClientService {
     }
   }
 
-  async updateUser(userId: string, updateData: any): Promise<any> {
+  async updateUser(userId: string, updateData: any, headers?: any): Promise<any> {
     try {
       const response = await firstValueFrom(
-        this.httpService.patch(`${this.baseUrl}/users/${userId}`, updateData),
+        this.httpService.patch(`${this.baseUrl}/users/${userId}`, updateData, { headers }),
       );
       return response.data;
     } catch (error) {
