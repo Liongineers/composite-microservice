@@ -89,4 +89,19 @@ export class UsersClientService {
       );
     }
   }
+
+  async updateUser(userId: string, updateData: any): Promise<any> {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.patch(`${this.baseUrl}/users/${userId}`, updateData),
+      );
+      return response.data;
+    } catch (error) {
+      this.logger.error(`Failed to update user ${userId}: ${error.message}`);
+      throw new HttpException(
+        error.response?.data || 'Users service unavailable',
+        error.response?.status || 503,
+      );
+    }
+  }
 }

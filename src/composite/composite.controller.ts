@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Delete, Body, Param, Query, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Param, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody, ApiQuery, ApiBearerAuth } from '@nestjs/swagger';
 import { CompositeService } from './composite.service';
 import { CreateProductDto } from '../dto/create-product.dto';
@@ -27,6 +27,15 @@ export class CompositeController {
   @ApiResponse({ status: 400, description: 'Invalid input' })
   async createUser(@Body() createUserDto: CreateUserDto): Promise<any> {
     return await this.compositeService.createUser(createUserDto);
+  }
+
+  @Patch('users/:userId')
+  @ApiOperation({ summary: 'Update user information' })
+  @ApiParam({ name: 'userId', description: 'User UUID' })
+  @ApiResponse({ status: 200, description: 'User updated' })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  async updateUser(@Param('userId') userId: string, @Body() updateData: any): Promise<any> {
+    return await this.compositeService.updateUser(userId, updateData);
   }
 
   @Get('sellers/:sellerId/profile')

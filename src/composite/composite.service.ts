@@ -195,6 +195,19 @@ export class CompositeService {
     return await this.usersClient.deleteUser(userId);
   }
 
+  async updateUser(userId: string, updateData: any): Promise<any> {
+    this.logger.log(`Updating user ${userId}`);
+    
+    // Validate user exists
+    const userExists = await this.usersClient.userExists(userId);
+    if (!userExists) {
+      throw new BadRequestException('User does not exist');
+    }
+    
+    // Delegate to users service
+    return await this.usersClient.updateUser(userId, updateData);
+  }
+
   async searchProducts(query: string): Promise<any[]> {
     this.logger.log(`Searching products with query: ${query}`);
 
