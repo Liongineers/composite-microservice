@@ -50,9 +50,7 @@ export class ReviewsClientService {
   async getReviewsByWriter(writerId: string): Promise<any[]> {
     try {
       const response = await firstValueFrom(
-        this.httpService.get(`${this.baseUrl}/reviews/mine`, {
-          headers: { 'X-User-Id': writerId },
-        }),
+        this.httpService.get(`${this.baseUrl}/reviews/writer/${writerId}`),
       );
       return response.data;
     } catch (error) {
