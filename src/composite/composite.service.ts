@@ -46,6 +46,25 @@ export class CompositeService {
       this.reviewsClient.getReviewsBySeller(sellerId),
     ]);
 
+    // Enrich reviews with writer information
+    const enrichedReviews = await Promise.all(
+      reviews.map(async (review) => {
+        try {
+          const writer = await this.usersClient.getUser(review.writer_id);
+          return {
+            ...review,
+            writer_name: writer.name,
+          };
+        } catch (error) {
+          this.logger.warn(`Failed to fetch writer ${review.writer_id}: ${error.message}`);
+          return {
+            ...review,
+            writer_name: 'Anonymous',
+          };
+        }
+      }),
+    );
+
     // Calculate statistics
     const totalProducts = products.length;
     const totalReviews = reviews.length;
@@ -57,7 +76,7 @@ export class CompositeService {
     return {
       seller,
       products,
-      reviews,
+      reviews: enrichedReviews,
       statistics: {
         totalProducts,
         averageRating: Number(averageRating.toFixed(2)),
