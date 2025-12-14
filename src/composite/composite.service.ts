@@ -142,11 +142,8 @@ export class CompositeService {
       throw new BadRequestException('Seller does not exist');
     }
 
-    // Reviews service doesn't accept writer_id, it uses a hardcoded TEST_USER
-    const { writer_id, ...reviewPayload } = createReviewDto;
-
-    // Delegate to reviews service
-    return await this.reviewsClient.createReview(reviewPayload);
+    // Delegate to reviews service with all fields
+    return await this.reviewsClient.createReview(createReviewDto);
   }
 
   async deleteUser(userId: string): Promise<any> {
