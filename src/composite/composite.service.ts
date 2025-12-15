@@ -34,14 +34,14 @@ export class CompositeService {
     return await this.usersClient.createUser(createUserDto);
   }
 
-  async getSellerProfile(sellerId: string): Promise<SellerProfileDto> {
+  async getSellerProfile(sellerId: string, headers?: any): Promise<SellerProfileDto> {
     this.logger.log(
       `Fetching seller profile for ${sellerId} with PARALLEL execution`,
     );
 
     // PARALLEL EXECUTION: Fetch data from all three services simultaneously
     const [seller, products, reviews] = await Promise.all([
-      this.usersClient.getUser(sellerId),
+      this.usersClient.getUser(sellerId, headers),
       this.productsClient.getProductsBySeller(sellerId),
       this.reviewsClient.getReviewsBySeller(sellerId),
     ]);
@@ -85,7 +85,7 @@ export class CompositeService {
     };
   }
 
-  async getProductDetails(productId: string): Promise<ProductDetailsDto> {
+  async getProductDetails(productId: string, headers?: any): Promise<ProductDetailsDto> {
     this.logger.log(
       `Fetching product details for ${productId} with PARALLEL execution`,
     );
@@ -95,7 +95,7 @@ export class CompositeService {
 
     // PARALLEL EXECUTION: Fetch seller info and reviews simultaneously
     const [seller, sellerReviews] = await Promise.all([
-      this.usersClient.getUser(product.seller_id),
+      this.usersClient.getUser(product.seller_id, headers),
       this.reviewsClient.getReviewsBySeller(product.seller_id),
     ]);
 
@@ -117,7 +117,7 @@ export class CompositeService {
     };
   }
 
-  async createProduct(createProductDto: CreateProductDto): Promise<any> {
+  async createProduct(createProductDto: CreateProductDto, headers?: any): Promise<any> {
     this.logger.log(
       `Creating product with FK validation for seller ${createProductDto.seller_id}`,
     );
@@ -125,6 +125,7 @@ export class CompositeService {
     // LOGICAL FOREIGN KEY CONSTRAINT: Validate seller exists
     const sellerExists = await this.usersClient.userExists(
       createProductDto.seller_id,
+      headers,
     );
     if (!sellerExists) {
       throw new BadRequestException('Seller does not exist');
@@ -134,7 +135,7 @@ export class CompositeService {
     const product = await this.productsClient.createProduct(createProductDto);
 
     // Enrich with seller info
-    const seller = await this.usersClient.getUser(createProductDto.seller_id);
+    const seller = await this.usersClient.getUser(createProductDto.seller_id, headers);
 
     return {
       ...product,
@@ -142,15 +143,15 @@ export class CompositeService {
     };
   }
 
-  async createReview(createReviewDto: CreateReviewDto): Promise<any> {
+  async createReview(createReviewDto: CreateReviewDto, headers?: any): Promise<any> {
     this.logger.log(
       `Creating review with FK validation for writer ${createReviewDto.writer_id} and seller ${createReviewDto.seller_id}`,
     );
 
     // LOGICAL FOREIGN KEY CONSTRAINTS: Validate both writer and seller exist in parallel
     const [writerExists, sellerExists] = await Promise.all([
-      this.usersClient.userExists(createReviewDto.writer_id),
-      this.usersClient.userExists(createReviewDto.seller_id),
+      this.usersClient.userExists(createReviewDto.writer_id, headers),
+      this.usersClient.userExists(createReviewDto.seller_id, headers),
     ]);
 
     if (!writerExists) {

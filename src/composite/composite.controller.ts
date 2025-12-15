@@ -48,8 +48,10 @@ export class CompositeController {
   @ApiParam({ name: 'sellerId', description: 'Seller UUID' })
   @ApiResponse({ status: 200, description: 'Seller profile retrieved', type: SellerProfileDto })
   @ApiResponse({ status: 404, description: 'Seller not found' })
-  async getSellerProfile(@Param('sellerId') sellerId: string): Promise<SellerProfileDto> {
-    return await this.compositeService.getSellerProfile(sellerId);
+  async getSellerProfile(@Param('sellerId') sellerId: string, @Req() req: Request): Promise<SellerProfileDto> {
+    const authHeader = req.headers.authorization;
+    const headers = authHeader ? { authorization: authHeader } : {};
+    return await this.compositeService.getSellerProfile(sellerId, headers);
   }
 
   @Get('products/:productId/details')
@@ -57,8 +59,10 @@ export class CompositeController {
   @ApiParam({ name: 'productId', description: 'Product UUID' })
   @ApiResponse({ status: 200, description: 'Product details retrieved', type: ProductDetailsDto })
   @ApiResponse({ status: 404, description: 'Product not found' })
-  async getProductDetails(@Param('productId') productId: string): Promise<ProductDetailsDto> {
-    return await this.compositeService.getProductDetails(productId);
+  async getProductDetails(@Param('productId') productId: string, @Req() req: Request): Promise<ProductDetailsDto> {
+    const authHeader = req.headers.authorization;
+    const headers = authHeader ? { authorization: authHeader } : {};
+    return await this.compositeService.getProductDetails(productId, headers);
   }
 
   @Post('products')
@@ -66,8 +70,10 @@ export class CompositeController {
   @ApiBody({ type: CreateProductDto })
   @ApiResponse({ status: 201, description: 'Product created with seller info' })
   @ApiResponse({ status: 400, description: 'Seller does not exist' })
-  async createProduct(@Body() createProductDto: CreateProductDto): Promise<any> {
-    return await this.compositeService.createProduct(createProductDto);
+  async createProduct(@Body() createProductDto: CreateProductDto, @Req() req: Request): Promise<any> {
+    const authHeader = req.headers.authorization;
+    const headers = authHeader ? { authorization: authHeader } : {};
+    return await this.compositeService.createProduct(createProductDto, headers);
   }
 
   @Post('reviews')
@@ -75,10 +81,12 @@ export class CompositeController {
   @ApiBody({ type: CreateReviewDto })
   @ApiResponse({ status: 201, description: 'Review created' })
   @ApiResponse({ status: 400, description: 'Writer or seller does not exist' })
-  async createReview(@Body() createReviewDto: CreateReviewDto): Promise<any> {
+  async createReview(@Body() createReviewDto: CreateReviewDto, @Req() req: Request): Promise<any> {
     console.log('Received review data:', JSON.stringify(createReviewDto));
     console.log('writer_id type:', typeof createReviewDto.writer_id, 'value:', createReviewDto.writer_id);
-    return await this.compositeService.createReview(createReviewDto);
+    const authHeader = req.headers.authorization;
+    const headers = authHeader ? { authorization: authHeader } : {};
+    return await this.compositeService.createReview(createReviewDto, headers);
   }
 
   @Delete('users/:userId')
