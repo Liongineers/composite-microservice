@@ -50,7 +50,7 @@ export class CompositeService {
     const enrichedReviews = await Promise.all(
       reviews.map(async (review) => {
         try {
-          const writer = await this.usersClient.getUser(review.writer_id);
+          const writer = await this.usersClient.getUser(review.writer_id, headers);
           return {
             ...review,
             writer_name: writer.name,
